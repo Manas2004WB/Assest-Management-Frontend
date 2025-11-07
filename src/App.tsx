@@ -1,115 +1,111 @@
-import "./App.css";
-import axios from "axios";
-import Tree from "react-d3-tree";
 import { useEffect, useState } from "react";
-import { useCenteredTree } from "./helper/useCenteredTree";
+import axios from "axios";
+import AssetNode from "./AssetNode";
+import "./App.css";
 
-interface NodeAttributes {
-  department?: string;
+interface Node {
+  node_id: number;
+  node_name: string;
+  children?: Node[];
 }
-
-interface NodeDatum {
-  name: string;
-  attributes?: NodeAttributes;
-  children?: NodeDatum[];
-}
-
-interface RenderProps {
-  nodeDatum: NodeDatum;
-  toggleNode: () => void;
-}
-
-const renderRectSvgNode = ({ nodeDatum, toggleNode }: RenderProps) => {
-  const width = 220;
-  const height = 90;
-
-  return (
-    <g transform={`translate(-${width / 2}, -${height / 2})`}>
-      <foreignObject width={width} height={height}>
-        <div
-          xmlns="http://www.w3.org/1999/xhtml"
-          onClick={toggleNode}
-          className="w-full h-full rounded-2xl shadow-lg border border-slate-700 
-                     bg-gradient-to-br from-slate-800 to-slate-900 
-                     text-white flex flex-col justify-center items-center 
-                     hover:scale-105 hover:shadow-blue-500/30 
-                     transition-all duration-300 cursor-pointer"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-blue-400 text-xl">🏭</span>
-            <h3 className="text-base font-semibold tracking-wide">
-              {nodeDatum.name}
-            </h3>
-          </div>
-        </div>
-      </foreignObject>
-    </g>
-  );
-};
 
 function App() {
-  const [tree, setTree] = useState<NodeDatum[]>([]);
-  const [translate, containerRef] = useCenteredTree();
-  async function fetchData() {
+  const [treeData, setTreeData] = useState<Node[]>([]);
+  const [newAssetName, setNewAssetName] = useState("");
+  const [parentName, setParentName] = useState("");
+  const [parentOptions, setParentOptions] = useState<{node_id:number, node_name:string}[]>([]);
+  // ✅ Fetch tree
+  async function fetchTree() {
     try {
-      const response = await axios.get<any[]>(
-        "http://127.0.0.1:8000/api/nodes/tree"
-      );
-      const mapToTreeFormat = (node: any): NodeDatum => {
-        const children =
-          Array.isArray(node.children) && node.children.length > 0
-            ? node.children.map(mapToTreeFormat)
-            : undefined;
-        return {
-          name: node.node_name,
-          attributes: node.department
-            ? { department: node.department }
-            : undefined,
-          ...(children ? { children } : {}),
-        };
-      };
-
-      const formattedTree = (response.data || []).map(mapToTreeFormat);
-      setTree(formattedTree);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      const res = await axios.get("http://127.0.0.1:8000/api/nodes/tree");
+      setTreeData(res.data);
+    } catch (err) {
+      console.error("Error fetching tree:", err);
     }
   }
+
+  // ✅ Add new asset
+  async function addAsset() {
+    if (!newAssetName || parentName === null) {
+      alert("Please provide both parent ID and node name");
+      return;
+    }
+
+    try {
+      await axios.post("http://127.0.0.1:8000/api/nodes", {
+        parent_name: parentName,
+        node_name: newAssetName,
+      });
+
+      setNewAssetName("");
+      setParentName("");
+
+      // Refresh tree after adding
+      await fetchTree();
+    } catch (err) {
+      console.error("Error adding asset:", err);
+    }
+  }
+
   useEffect(() => {
-    fetchData();
+    fetchTree();
   }, []);
 
+  async function fetchParentOptions(query: string) {
+  if (!query) return setParentOptions([]);
+  try {
+    const res = await axios.get(`http://127.0.0.1:8000/api/nodes/search?q=${query}`);
+    setParentOptions(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
   return (
-    <div>
-      <h1>Asset Hierarchy</h1>
-      <div
-        style={{
-          width: "100vw",
-          height: "100vh",
-          background: "linear-gradient(160deg, #0f172a, #1e293b)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          overflow: "hidden",
-        }}
-        ref={containerRef as any}
-      >
-        {tree.length > 0 ? (
-          <Tree
-            data={tree}
-            translate={translate}
-            renderCustomNodeElement={renderRectSvgNode}
-            orientation="vertical"
-            separation={{ siblings: 1.8, nonSiblings: 2.2 }}
-            nodeSize={{ x: 280, y: 200 }}
-            pathFunc="diagonal"
-            zoomable
-          />
-        ) : (
-          <div>Loading tree…</div>
-        )}
-      </div>
+    <div className="app-container">
+  <h1 className="page-title">Asset Hierarchy</h1>
+
+  <div className="add-asset-form">
+    <input
+      type="text"
+      placeholder="Parent Name"
+      value={parentName ?? ""}
+      onChange={(e) => {
+        setParentName(e.target.value),
+        fetchParentOptions(e.target.value);
+      }}
+    />
+    {parentOptions.length > 0 && (
+  <ul className="dropdown">
+    {parentOptions.map((opt) => (
+      <li key={opt.node_id} onClick={() => {
+        setParentName(opt.node_name);
+        // setSelectedParentId(opt.node_id); // store ID for API
+        setParentOptions([]);
+      }}>
+        {opt.node_name}
+      </li>
+    ))}
+  </ul>
+)}
+    <input
+      type="text"
+      placeholder="Asset Name"
+      value={newAssetName}
+      onChange={(e) => setNewAssetName(e.target.value)}
+    />
+    <button onClick={addAsset}>Add Asset</button>
+  </div>
+
+  <div className="tree-section">
+    <div className="tree-container">
+      {treeData.map((node) => (
+        <AssetNode key={node.node_id} node={node} />
+      ))}
     </div>
+  </div>
+</div>
+
   );
 }
 
