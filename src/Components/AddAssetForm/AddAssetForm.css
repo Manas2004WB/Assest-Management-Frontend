@@ -1,0 +1,73 @@
+.add-asset-form {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-left: 4px solid #3dcd58;
+  padding: 20px 25px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-asset-form input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  flex: 1;
+}
+
+.add-asset-form button {
+  background-color: #007a33;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.add-asset-form button:hover {
+  background-color: #00994f;
+}
+
+.parent-name-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;       
+  min-width: 250px;
+}
+.parent-name-input input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  z-index: 1000;
+}
+
+.dropdown li {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #333;
+}
+
+.dropdown li:hover {
+  background-color: #e8f9ec;
+}

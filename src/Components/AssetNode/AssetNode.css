@@ -1,0 +1,90 @@
+
+.asset-node {
+  margin-left: 1.5rem;
+  padding-left: 15px;
+  border-left: 2px solid #e0e0e0;
+  margin-bottom: 10px;
+}
+.node-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #f9f9f9;
+  color: #555;
+  cursor: default;
+  border-left: 2px solid #b6c8b8;
+  transition: background 0.2s;
+}
+.node-header:hover {
+  background: #f5f7f5; 
+}
+.node-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.node-content{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  font-weight: 600;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #6f6f6f;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.delete-btn:hover {
+  background-color: #e8f9ec;
+  color: #3dcd58; 
+}
+.node-header.clickable:hover {
+  background: #e8f9ec;
+}
+.node-actions {
+  visibility: hidden;
+}
+
+.node-header:hover .node-actions {
+  visibility: visible;
+}
+
+.toggle-btn {
+  width: 22px;
+  height: 22px;
+  background: #3dcd58;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.toggle-btn:hover {
+  background: #34b84e;
+}
+
+.node-name {
+  font-weight: 600;
+  color: #333;
+}
+.node-count {
+  font-weight: 600;
+  color: #41a542;
+}
+.node-children{
+  margin: 10px;
+}
