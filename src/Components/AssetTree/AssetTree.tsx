@@ -6,6 +6,8 @@ interface Node {
   node_id: number;
   node_name: string;
   children?: Node[];
+  children_count: number;
+  is_deleted:boolean;
 }
 
 const AssetTree = () => {

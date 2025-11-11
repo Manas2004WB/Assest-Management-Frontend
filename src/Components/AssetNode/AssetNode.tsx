@@ -13,6 +13,7 @@ interface Node {
   children_count: number;
   children?: Node[];
   attributes?: NodeAttributes;
+  is_deleted:boolean;
 }
 
 interface AssetNodeProps {
@@ -20,7 +21,7 @@ interface AssetNodeProps {
   fetchTree: () => void;
 }
 
-const AssetNode: React.FC<AssetNodeProps> = ({ node, fetchTree }) => {
+const AssetNode: React.FC<AssetNodeProps> = ({ node, fetchTree}) => {
   const [expanded, setExpanded] = useState(true);
   const hasChildren = node.children && node.children.length > 0;
 
@@ -62,7 +63,7 @@ const AssetNode: React.FC<AssetNodeProps> = ({ node, fetchTree }) => {
           <span className="node-count">({node.children_count})</span>
         </div>
 
-        {node.node_id !== 1 && (
+        {node.node_id !== 1  &&(
           <div className="node-actions">
             <button
               className="delete-btn"
