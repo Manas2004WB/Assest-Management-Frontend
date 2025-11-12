@@ -4,13 +4,21 @@
   align-items: stretch;
   justify-content: flex-start;
   height: 100vh; 
-  max-width: 1100px;
-  margin: auto;
+  max-width: 100%;
   padding: 30px;
   box-sizing: border-box;
   background-color: #f3f2f2;
+  flex: 1;
+  overflow-y: auto;
+  background-color: white;
+  border-left: 1px solid #e5e7eb;
 }
-
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #92e895; 
+}
 .page-title {
   font-size: 2rem;
   font-weight: 700;
@@ -31,4 +39,13 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+.analytics-section{
+  padding: 2rem;
+  color: #064e3b;
+  background-color: #a8fa95;
+  border-left: 1px solid #057414;
+   font-size: 1.05rem;
+  font-weight: 600;
 }

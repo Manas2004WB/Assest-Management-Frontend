@@ -1,13 +1,55 @@
-import AssetTree from "../../Components/AssetTree/AssetTree";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import AssetNode from "../../Components/AssetNode/AssetNode";
 import "./DeletedNodes.css";
-
+import Sidebar from "../../Components/Sidebar/Sidebar";
+interface DeletedTree {
+  node_id: number;
+  node_name: string;
+  children_count: number;
+  children?: DeletedTree[];
+  attributes?: { department?: string; status?: string };
+  is_deleted: boolean;
+}
 const DeletedNodes = () => {
+  const [deletedTrees, setDeletedTrees] = useState<DeletedTree[]>([]);
+
+  useEffect(() => {
+    fetchDeletedTrees();
+  }, []);
+
+  const fetchDeletedTrees = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/api/nodes/deleted-trees");
+      setDeletedTrees(res.data);
+    } catch (err) {
+      console.error("Failed to load deleted trees:", err);
+    }
+  };
+
   return (
-    <div className="app-container">
-      <h1 className="page-title">Asset Hierarchy(Deleted)</h1>
-      <div className="tree-section">
-        <AssetTree/>
+    <div className="layout">
+      <Sidebar/>
+      <div className="app-container">
+      <h1 className="page-title">Deleted Asset Hierarchies</h1>
+
+      <div className="deleted-tree-section">
+        {deletedTrees.length === 0 ? (
+          <p>No deleted nodes found.</p>
+        ) : (
+          deletedTrees.map((tree) => (
+            <div key={tree.node_id} className="deleted-card">
+              <div className="deleted-card-header">
+                <h2>{tree.node_name}</h2>
+              </div>
+              <div className="deleted-card-body">
+                <AssetNode node={tree} fetchTree={fetchDeletedTrees} isDeletedView />
+              </div>
+            </div>
+          ))
+        )}
       </div>
+    </div>
     </div>
   );
 };

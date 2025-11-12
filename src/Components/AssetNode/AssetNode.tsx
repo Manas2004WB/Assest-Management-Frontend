@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./AssetNode.css";
 import { MdDelete } from "react-icons/md";
+import { MdOutlineRestorePage } from "react-icons/md";
 import axios from "axios";
 interface NodeAttributes {
   department?: string;
@@ -13,15 +14,19 @@ interface Node {
   children_count: number;
   children?: Node[];
   attributes?: NodeAttributes;
-  is_deleted:boolean;
+  is_deleted: boolean;
 }
-
 interface AssetNodeProps {
   node: Node;
   fetchTree: () => void;
+  isDeletedView?: boolean;
 }
 
-const AssetNode: React.FC<AssetNodeProps> = ({ node, fetchTree}) => {
+const AssetNode: React.FC<AssetNodeProps> = ({
+  node,
+  fetchTree,
+  isDeletedView = false,
+}) => {
   const [expanded, setExpanded] = useState(true);
   const hasChildren = node.children && node.children.length > 0;
 
@@ -35,6 +40,21 @@ const AssetNode: React.FC<AssetNodeProps> = ({ node, fetchTree}) => {
 
     try {
       await axios.delete(`http://127.0.0.1:8000/api/nodes/${nodeId}`);
+      await fetchTree();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete node");
+    }
+  }
+  async function handleRestoreNode(nodeId: number) {
+    if (
+      !window.confirm(
+        "Are you sure you want to restore this node and its children?"
+      )
+    )
+      return;
+    try {
+      await axios.put(`http://127.0.0.1:8000/api/nodes/restore/${nodeId}`);
       await fetchTree();
     } catch (err) {
       console.error(err);
@@ -60,10 +80,12 @@ const AssetNode: React.FC<AssetNodeProps> = ({ node, fetchTree}) => {
             </button>
           )}
           <span className="node-name">{node.node_name}</span>
-          <span className="node-count">({node.children_count})</span>
+          <span className="node-count">
+            ({node.children_count || node.children?.length || 0})
+          </span>
         </div>
 
-        {node.node_id !== 1  &&(
+        {node.node_id !== 1 && !isDeletedView && (
           <div className="node-actions">
             <button
               className="delete-btn"
@@ -76,13 +98,39 @@ const AssetNode: React.FC<AssetNodeProps> = ({ node, fetchTree}) => {
             </button>
           </div>
         )}
+        {isDeletedView && (
+          <div className="node-actions">
+            <button
+              className="delete-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRestoreNode(node.node_id);
+              }}
+            >
+              <MdOutlineRestorePage />
+            </button>
+          </div>
+        )}
       </div>
 
       {hasChildren && expanded && (
         <div className="node-children">
-          {node.children!.map((child) => (
-            <AssetNode key={child.node_id} node={child} fetchTree={fetchTree} />
-          ))}
+          {node.children!.map((child) =>
+            isDeletedView ? (
+              <AssetNode
+                key={child.node_id}
+                node={child}
+                fetchTree={fetchTree}
+                isDeletedView
+              />
+            ) : (
+              <AssetNode
+                key={child.node_id}
+                node={child}
+                fetchTree={fetchTree}
+              />
+            )
+          )}
         </div>
       )}
     </div>
