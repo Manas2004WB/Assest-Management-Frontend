@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import AssetNode from "../AssetNode/AssetNode";
 
 interface Node {
@@ -9,23 +7,11 @@ interface Node {
   children_count: number;
   is_deleted:boolean;
 }
-
-const AssetTree = () => {
-  const [treeData, setTreeData] = useState<Node[]>([]);
-
-  async function fetchTree() {
-    try {
-      const res = await axios.get("http://127.0.0.1:8000/api/nodes/tree");
-      setTreeData(res.data);
-    } catch (err) {
-      console.error("Error fetching tree:", err);
-    }
-  }
-
-  useEffect(() => {
-    fetchTree();
-  }, []);
-
+interface AssetTreeProps{
+  treeData : Node[]
+  fetchTree: () => void;
+}
+const AssetTree: React.FC<AssetTreeProps> = ({treeData, fetchTree}) => {
   return (
     <div className="tree-container">
       {treeData.map((node) => (
