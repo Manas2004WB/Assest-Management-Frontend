@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./AssetNode.css";
 import { MdDelete } from "react-icons/md";
 import { MdOutlineRestorePage } from "react-icons/md";
-import axios from "axios";
+import { useNodeService } from "../../api/nodeService";
 interface NodeAttributes {
   department?: string;
   status?: string;
@@ -27,9 +27,10 @@ const AssetNode: React.FC<AssetNodeProps> = ({
   fetchTree,
   isDeletedView = false,
 }) => {
+  const { deleteNode,restoreNode } = useNodeService(); 
   const [expanded, setExpanded] = useState(true);
   const hasChildren = node.children && node.children.length > 0;
-
+  //Done
   async function handleDelete(nodeId: number) {
     if (
       !window.confirm(
@@ -39,13 +40,14 @@ const AssetNode: React.FC<AssetNodeProps> = ({
       return;
 
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/nodes/${nodeId}`);
+      await deleteNode(nodeId);
       await fetchTree();
     } catch (err) {
       console.error(err);
       alert("Failed to delete node");
     }
   }
+  //Done
   async function handleRestoreNode(nodeId: number) {
     if (
       !window.confirm(
@@ -54,7 +56,7 @@ const AssetNode: React.FC<AssetNodeProps> = ({
     )
       return;
     try {
-      await axios.put(`http://127.0.0.1:8000/api/nodes/restore/${nodeId}`);
+      await restoreNode(nodeId);
       await fetchTree();
     } catch (err) {
       console.error(err);

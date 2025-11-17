@@ -41,11 +41,30 @@
   overflow-y: auto;
 }
 
-.analytics-section{
-  padding: 2rem;
-  color: #064e3b;
-  background-color: #a8fa95;
-  border-left: 1px solid #057414;
-   font-size: 1.05rem;
+.analytics-section {
+  width: 280px; 
+  background-color: #ffffff;
+  border-left: 1px solid #e0e0e0;
+  padding: 20px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.analytics-section h1 {
+  font-size: 1.1rem;
   font-weight: 600;
+  color: #333;
+  margin: 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.analytics-section h1 span {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #418d12; 
 }

@@ -1,0 +1,77 @@
+
+.main-container-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f3f2f2; /* Schneider white */
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.app-container-login {
+  width: 400px;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.login-form-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #3dcd58; /* Schneider green */
+  margin-bottom: 20px;
+}
+
+
+.login-from {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #3dcd58;
+  box-shadow: 0 0 5px rgba(61, 205, 88, 0.4);
+}
+
+.login-btn {
+  background-color: #3dcd58;
+  color: #fff;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #34b94d;
+}
+
+span {
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+  text-align: center;
+}
+
+span a {
+  color: #3dcd58;
+  text-decoration: none;
+  font-weight: bold;
+}

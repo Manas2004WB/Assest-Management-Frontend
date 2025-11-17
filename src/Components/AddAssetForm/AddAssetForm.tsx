@@ -1,7 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import "./AddAssetForm.css";
-
+import { useNodeService } from "../../api/nodeService";
 interface AddAssetFormProps {
   onAssetAdded: () => void;
 }
@@ -12,22 +11,21 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetFormProps) => {
   const [parentOptions, setParentOptions] = useState<
     { node_id: number; node_name: string }[]
   >([]);
-
+  const { getParentNameApi,postAsset } = useNodeService(); 
+ //done
   async function fetchParentOptions(query: string) {
     if (!query.trim()) {
       setParentOptions([]);
       return;
     }
     try {
-      const res = await axios.get(
-        `http://127.0.0.1:8000/api/nodes/search?q=${query}`
-      );
-      setParentOptions(res.data);
+      const res = await getParentNameApi(query)
+      setParentOptions(res);
     } catch (err) {
       console.error(err);
     }
   }
-
+  //Done
   async function addAsset() {
     if (!newAssetName || !parentName) {
       alert("Please provide both parent name and asset name");
@@ -35,11 +33,7 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetFormProps) => {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/nodes", {
-        parent_name: parentName,
-        node_name: newAssetName,
-      });
-
+      await postAsset(parentName,newAssetName);
       setNewAssetName("");
       setParentName("");
       setParentOptions([]);

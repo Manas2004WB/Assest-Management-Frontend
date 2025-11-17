@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import AssetNode from "../../Components/AssetNode/AssetNode";
 import "./DeletedNodes.css";
 import Sidebar from "../../Components/Sidebar/Sidebar";
+import { useNodeService } from "../../api/nodeService";
+
 interface DeletedTree {
   node_id: number;
   node_name: string;
@@ -13,15 +14,15 @@ interface DeletedTree {
 }
 const DeletedNodes = () => {
   const [deletedTrees, setDeletedTrees] = useState<DeletedTree[]>([]);
-
+  const { getDeletedTrees } = useNodeService();
   useEffect(() => {
     fetchDeletedTrees();
   }, []);
 
   const fetchDeletedTrees = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/nodes/deleted-trees");
-      setDeletedTrees(res.data);
+      const res = await getDeletedTrees();
+      setDeletedTrees(res);
     } catch (err) {
       console.error("Failed to load deleted trees:", err);
     }
