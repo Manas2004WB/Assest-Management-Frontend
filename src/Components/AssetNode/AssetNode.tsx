@@ -3,6 +3,7 @@ import "./AssetNode.css";
 import { MdDelete } from "react-icons/md";
 import { MdOutlineRestorePage } from "react-icons/md";
 import { useNodeService } from "../../api/nodeService";
+
 interface NodeAttributes {
   department?: string;
   status?: string;
@@ -20,17 +21,21 @@ interface AssetNodeProps {
   node: Node;
   fetchTree: () => void;
   isDeletedView?: boolean;
+  onSelect?: (nodeId: number) => void; // new
 }
+
+const ROOT_NODE_ID = 1;
 
 const AssetNode: React.FC<AssetNodeProps> = ({
   node,
   fetchTree,
   isDeletedView = false,
+  onSelect,
 }) => {
-  const { deleteNode,restoreNode } = useNodeService(); 
+  const { deleteNode, restoreNode } = useNodeService();
   const [expanded, setExpanded] = useState(true);
   const hasChildren = node.children && node.children.length > 0;
-  //Done
+
   async function handleDelete(nodeId: number) {
     if (
       !window.confirm(
@@ -47,7 +52,7 @@ const AssetNode: React.FC<AssetNodeProps> = ({
       alert("Failed to delete node");
     }
   }
-  //Done
+
   async function handleRestoreNode(nodeId: number) {
     if (
       !window.confirm(
@@ -60,14 +65,18 @@ const AssetNode: React.FC<AssetNodeProps> = ({
       await fetchTree();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete node");
+      alert("Failed to restore node");
     }
   }
+
   return (
     <div className="asset-node">
       <div
         className={`node-header ${hasChildren ? "clickable" : ""}`}
-        onClick={() => hasChildren && setExpanded(!expanded)}
+        onClick={() => {
+          hasChildren && setExpanded(!expanded);
+          onSelect && onSelect(node.node_id); // notify parent
+        }}
       >
         <div className="node-info">
           {hasChildren && (
@@ -87,7 +96,7 @@ const AssetNode: React.FC<AssetNodeProps> = ({
           </span>
         </div>
 
-        {node.node_id !== 1 && !isDeletedView && (
+        {node.node_id !== ROOT_NODE_ID && !isDeletedView && (
           <div className="node-actions">
             <button
               className="delete-btn"
@@ -117,22 +126,15 @@ const AssetNode: React.FC<AssetNodeProps> = ({
 
       {hasChildren && expanded && (
         <div className="node-children">
-          {node.children!.map((child) =>
-            isDeletedView ? (
-              <AssetNode
-                key={child.node_id}
-                node={child}
-                fetchTree={fetchTree}
-                isDeletedView
-              />
-            ) : (
-              <AssetNode
-                key={child.node_id}
-                node={child}
-                fetchTree={fetchTree}
-              />
-            )
-          )}
+          {node.children.map((child) => (
+            <AssetNode
+              key={child.node_id}
+              node={child}
+              fetchTree={fetchTree}
+              isDeletedView={isDeletedView}
+              onSelect={onSelect} // forward callback
+            />
+          ))}
         </div>
       )}
     </div>

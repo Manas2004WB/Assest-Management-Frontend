@@ -4,7 +4,7 @@ import AssetTree from "../../Components/AssetTree/AssetTree";
 import Sidebar from "../../Components/Sidebar/Sidebar";
 import "./Mainpage.css";
 import { useNodeService } from "../../api/nodeService";
-
+import NodeMetricsPanel from "../../Components/NodeMetricsPanel/NodeMetricsPanel";
 interface Node {
   node_id: number;
   node_name: string;
@@ -14,8 +14,8 @@ interface Node {
 }
 
 const Mainpage = () => {
-  const { getTree } = useNodeService();   
-
+  const { getTree } = useNodeService();
+  const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [totalAssets, setTotalAssets] = useState(0);
   const [maxDepth, setMaxDepth] = useState(0);
   const [treeData, setTreeData] = useState<Node[]>([]);
@@ -59,12 +59,25 @@ const Mainpage = () => {
         <h1 className="page-title">Asset Hierarchy</h1>
         <AddAssetForm onAssetAdded={fetchTree} />
         <div className="tree-section">
-          <AssetTree treeData={treeData} fetchTree={fetchTree} />
+          <AssetTree
+            treeData={treeData}
+            fetchTree={fetchTree}
+            onNodeSelect={(id: number) => setSelectedNodeId(id)}
+          />
         </div>
       </div>
       <div className="analytics-section">
-        <h1 className="total-assets">Total Assets: <span>{totalAssets}</span></h1>
-        <h1 className="maximum-depth">Maximum Depth: <span>{maxDepth}</span></h1>
+        <h1 className="total-assets">
+          Total Assets: <span>{totalAssets}</span>
+        </h1>
+        <h1 className="maximum-depth">
+          Maximum Depth: <span>{maxDepth}</span>
+        </h1>
+        {selectedNodeId ? (
+          <NodeMetricsPanel nodeId={selectedNodeId} />
+        ) : (
+          <div>Select a node to see metrics...</div>
+        )}
       </div>
     </div>
   );
